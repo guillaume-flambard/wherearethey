@@ -1,32 +1,26 @@
 <template>
   <div>
-    <header>
-      <nav class="space-y-5">
+    <header class="shadow-sm bg-white dark:bg-slate-800">
+      <nav class="container mx-auto p-4">
         <NuxtLink to="/">Where Are They</NuxtLink>
       </nav>
     </header>
-    <div>
+    <div class="container mx-auto p-4">
       <slot />
     </div>
 
-    <footer>
-      <ul class="space-y-1">
-        <li><NuxtLink class="active:bg-slate-500" to="/">Home</NuxtLink></li>
+    <footer class="container mx-auto p-4 flex justify-between border-t-2">
+      <ul class="flex gap-4">
+        <li><NuxtLink to="/">Home</NuxtLink></li>
         <li>
-          <NuxtLink class="active:bg-slate-500" to="/dashboard"
-            >Dashboard</NuxtLink
-          >
+          <NuxtLink to="/dashboard">Dashboard</NuxtLink>
         </li>
         <li>
-          <NuxtLink class="active:bg-slate-500" to="/cases">Cases</NuxtLink>
+          <NuxtLink class="btn" to="/cases">Cases</NuxtLink>
         </li>
       </ul>
     </footer>
   </div>
 </template>
 
-<style scoped>
-.router-link-active {
-  color: #12b488;
-}
-</style>
+<style scoped></style>
