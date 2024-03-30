@@ -1,6 +1,12 @@
 <template>
   <div>
+    <div v-if="loading">
+      loading...
+    </div>
     <h1 class="font-extrabold text-3xl text-center">X-File - {{ id }}</h1>
+    <!-- <div v-if="loading" class="relative h-screen flex items-center justify-center">
+      <div class="loader absolute"></div>
+    </div> -->
 
     <article v-for="c in casesData" :key="c.id_cas">
       <div>
@@ -35,8 +41,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { useRoute } from "vue-router";
 import Papa from "papaparse";
 
 // Définition de l'interface pour les données des cas
@@ -51,19 +55,20 @@ interface CaseData {
 	cas_resume_web: string;
 	cas_resume: string;
 }
-
+const loading = ref(false);
 // Utilisation de useRoute pour accéder aux paramètres de route
 const route = useRoute();
 const id = ref(route.params.id as string);
 
 // Déclaration de la référence pour stocker les données des cas
 const casesData = ref<CaseData[]>([]);
-
 // Fonction pour charger et parser le fichier CSV
 const loadCasesData = () => {
 	const csvUrl = "/public_cases.csv";
+	loading.value = true;
 	fetch(csvUrl)
 		.then((response) => response.text())
+
 		.then((csvText) => {
 			Papa.parse(csvText, {
 				header: true,
@@ -74,6 +79,7 @@ const loadCasesData = () => {
 					casesData.value = parsedData.filter(
 						(c): c is CaseData => c.id_cas === id.value,
 					);
+					loading.value = false;
 				},
 			});
 		})
