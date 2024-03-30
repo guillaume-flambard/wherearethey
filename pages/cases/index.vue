@@ -54,69 +54,41 @@
 </template>
 
 <script setup lang="ts">
-import Papa from "papaparse";
+import type { CaseData } from "~/types/cases";
 
-interface CaseData {
-	id_cas: string;
-	cas_nom_dossier: string;
-	cas_zone_nom: string;
-	cas_public: string;
-	cas_temoignages_nb: string;
-	cas_classification_calc: string;
-	cas_AAAA: string;
-	cas_resume_web: string;
-	cas_resume: string;
-}
-
+// definition of the page meta
 definePageMeta({
 	layout: "cases",
 });
 
-const csvUrl = "public_cases.csv";
-const casesData = ref<CaseData[]>([]);
-const loading = ref(false);
-const currentPage = ref(1);
-const pageSize = ref(10);
-const search = ref("");
+// Fetch cases data
+const { data: casesData, pending: loading } =
+	await useFetch<CaseData[]>("/api/cases");
 
-// Fetch data on mounted
-onMounted(async () => {
-	loading.value = true;
-	try {
-		const response = await fetch(`http://localhost:3000/${csvUrl}`);
-		const csvText = await response.text();
-		Papa.parse(csvText, {
-			header: true,
-			skipEmptyLines: true,
-			complete: (results) => {
-				casesData.value = results.data as CaseData[];
-				loading.value = false;
-			},
-		});
-	} catch (error) {
-		console.error("Erreur lors du chargement du fichier CSV:", error);
-		loading.value = false;
-	}
-});
+// Reactive variables for pagination and search
+const currentPage = ref<number>(1);
+const pageSize = ref<number>(10);
+const search = ref<string>("");
 
 // Computed properties for pagination and search
 const filteredCasesData = computed(() => {
 	if (search.value) {
-		return casesData.value.filter((c) =>
+		return casesData.value?.filter((c) =>
 			c.cas_nom_dossier.toLowerCase().includes(search.value.toLowerCase()),
 		);
 	}
 	return casesData.value;
 });
 
+// Paginate the filtered data
 const paginatedCasesData = computed(() => {
-	const start = (currentPage.value - 1) * pageSize.value;
-	return filteredCasesData.value.slice(start, start + pageSize.value);
+	const start = (currentPage?.value - 1) * pageSize.value;
+	return filteredCasesData.value?.slice(start, start + pageSize.value);
 });
 
-// Calcul du nombre total de pages en fonction des résultats filtrés
+// Calculate the total number of pages
 const totalFilteredPages = computed(() => {
-	return Math.ceil(filteredCasesData.value.length / pageSize.value);
+	return Math.ceil(filteredCasesData?.value?.length ?? 0 / pageSize.value);
 });
 
 // Watch for search changes and reset to first page

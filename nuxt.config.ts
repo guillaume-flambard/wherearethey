@@ -5,4 +5,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     'nuxt-icon'],
   css: ['~/layouts/global.css'],
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' }
+  },
 })
