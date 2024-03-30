@@ -2,7 +2,7 @@
   <div class="min-h-screen">
     <header class="shadow-sm bg-white dark:bg-slate-800">
       <nav class="container mx-auto p-4 flex justify-between">
-        <NuxtLink to="/" class="font-bold">Where Are They</NuxtLink>
+        <NuxtLink to="/" class="font-bold">👽 Where Are They</NuxtLink>
         <ul class="flex gap-4">
           <li><NuxtLink to="/">Home</NuxtLink></li>
           <li>

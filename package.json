@@ -17,8 +17,10 @@
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.6.3",
     "@nuxtjs/color-mode": "^3.3.3",
     "@nuxtjs/tailwindcss": "6.11.5-1711212104.11c980a",
+    "@types/papaparse": "^5.3.14",
     "papaparse": "^5.4.1"
   }
 }

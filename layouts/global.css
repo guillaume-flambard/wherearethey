@@ -1,0 +1,9 @@
+@font-face {
+    font-family: "Roboto Mono";
+    /* src: local("Oxygen"),
+        url(~assets/Oxygen/Oxygen-Regular.ttf) format("truetype"); */
+}
+
+html {
+    font-family: "Roboto Mono", monospace;
+}
