@@ -48,7 +48,7 @@ const { id } = useRoute().params;
 const { data: fetchData, pending: loading } = await useFetch(
 	`/api/cases/${id}`,
 );
-const data = ref<CaseData | null>(fetchData.value ? fetchData.value[0] : null);
+const data = ref<CaseData | null>((fetchData.value as CaseData[])[0] ?? null);
 </script>
 
 
