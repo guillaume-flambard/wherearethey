@@ -3,10 +3,10 @@
     <div v-if="loading">
       loading...
     </div>
-    <h1 class="font-extrabold text-3xl text-center">X-File - {{ data?.id_cas }}</h1>
     <!-- <div v-if="loading" class="relative h-screen flex items-center justify-center">
       <div class="loader absolute"></div>
     </div> -->
+    <h1 class="font-extrabold text-3xl text-center">X-File - {{ data?.id_cas }}</h1>
     <CaseArticle :data="data"  />
 
 

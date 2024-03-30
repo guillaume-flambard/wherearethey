@@ -15,7 +15,7 @@
       <ul class="flex gap-4">
         <li><NuxtLink to="/">Home</NuxtLink></li>
         <li>
-          <NuxtLink to="/dashboard">Dashboard</NuxtLink>
+          <NuxtLink to="/map">Map</NuxtLink>
         </li>
         <li>
           <NuxtLink class="btn" to="/cases">Cases</NuxtLink>
