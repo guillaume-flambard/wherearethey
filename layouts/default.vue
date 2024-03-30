@@ -11,6 +11,11 @@
 </template>
 
 <script setup lang="ts">
+const route = useRoute();
+watch(
+	() => route.path,
+	() => location.reload(),
+);
 </script>
 
 <style scoped>
