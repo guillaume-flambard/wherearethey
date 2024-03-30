@@ -15,9 +15,7 @@
 
 <script setup lang="ts">
 import type { CaseData } from "~/types/cases";
-const CaseArticle = defineAsyncComponent(
-	() => import("~/components/CaseArticle.vue"),
-);
+
 const route = useRoute();
 const id = route.params.id;
 
