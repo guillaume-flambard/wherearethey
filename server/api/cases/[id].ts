@@ -13,7 +13,7 @@ export default defineEventHandler(async (event) => {
     return new Promise((resolve, reject) => {
         Papa.parse(csvData, {
             header: true,
-            skipEmptyLines: "greedy", // Mis à jour pour correspondre à la documentation de PapaParse
+            skipEmptyLines: "greedy",
             complete: (results) => {
                 console.log(results.data.filter((row: unknown) => (row as CaseData).id_cas === id));
 

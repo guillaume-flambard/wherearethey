@@ -7,7 +7,7 @@
       <div class="loader absolute"></div>
     </div> -->
     <h1 class="font-extrabold text-3xl text-center">X-File - {{ data?.id_cas }}</h1>
-    <CaseArticle :data="data"  />
+    <CaseArticle :data="data" />
 
 
   </div>
@@ -16,11 +16,18 @@
 <script setup lang="ts">
 import type { CaseData } from "~/types/cases";
 
+definePageMeta({
+  layout: "cases",
+  pageTransition: {
+    name: "rotate",
+  },
+});
+
 const route = useRoute();
 const id = route.params.id;
 
 const { data: fetchData, pending: loading } = await useFetch<CaseData[]>(
-	`/api/cases/${id}`,
+  `/api/cases/${id}`,
 );
 const data = ref<CaseData | null>(fetchData.value ? fetchData.value[0] : null);
 </script>

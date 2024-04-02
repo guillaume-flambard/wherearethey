@@ -2,6 +2,12 @@
   <h1 class="font-extrabold text-3xl text-center">Landing</h1>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+definePageMeta({
+  pageTransition: {
+    name: 'rotate'
+  }
+});
+</script>
 
-<style scoped></style>
+<style></style>

@@ -4,15 +4,30 @@
       <h2 class="font-bold text-xl">{{ data?.cas_nom_dossier }}</h2>
       <div class="flex flex-wrap justify-between">
         <div class="mx-2">
-          <p>📍 {{ data?.cas_zone_nom }}</p>
-          <p>👀 {{ data?.cas_public }}</p>
+          <div class="flex items-center gap-1">
+            <Icon name="lets-icons:pin-alt-duotone" size="25" />
+            <p>{{ data?.cas_zone_nom }}</p>
+          </div>
+          <div class="flex items-center gap-1">
+            <Icon name="lets-icons:view-duotone" size="25" />
+            <p>{{ data?.cas_public }}</p>
+          </div>
         </div>
         <div class="mx-2">
-          <p>👤 {{ data?.cas_temoignages_nb }}</p>
-          <p>🎖️ {{ data?.cas_classification_calc }}</p>
+          <div class="flex items-center gap-1">
+            <Icon name="lets-icons:user-duotone" size="25" />
+            <p>{{ data?.cas_temoignages_nb }}</p>
+          </div>
+          <div class="flex items-center gap-1">
+            <Icon name="lets-icons:star-duotone" size="25" />
+            <p>{{ data?.cas_classification_calc }}</p>
+          </div>
         </div>
       </div>
-      <p>🗓️ {{ data?.cas_AAAA }}</p>
+      <div class="flex items-center gap-1 ms-2">
+        <Icon name="lets-icons:calendar-duotone" size="25" />
+        <p>{{ data?.cas_AAAA }}</p>
+      </div>
       <div class="flex flex-col gap-6 my-2">
         <p class="text-sm">
           <span class="font-bold">Témoignage officiel :</span><br />
@@ -33,7 +48,7 @@ import type { CaseData } from "~/types/cases";
 
 // Correctement définir et typer la prop 'data'
 defineProps<{
-	data?: CaseData | null;
+  data?: CaseData | null;
 }>();
 </script>
 
