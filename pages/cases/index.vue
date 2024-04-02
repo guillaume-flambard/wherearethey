@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <div v-if="loading">loading...</div> -->
+    <div v-if="loading">loading...</div>
     <h1 class="font-extrabold text-3xl text-center">Cases</h1>
     <form>
       <input type="text" placeholder="find your Alien..."
@@ -9,7 +9,6 @@
     </form>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5 mb-20">
       <article v-for="c in paginatedCasesData">
-
         <div class="block p-4 shadow-sm bg-white dark:bg-slate-800 rounded-lg h-full ">
           <div class="flex flex-col gap-1">
             <NuxtLink :to="`/cases/${c.id_cas}`">
@@ -72,31 +71,26 @@
 </template>
 
 <script setup lang="ts">
-
-import { ref, watch, computed } from 'vue';
-import { useFetch } from 'nuxt/app';
-
+import type { CaseData } from '~/types/cases';
 const currentPage = ref(1);
 const pageSize = ref(10);
 const search = ref("");
 
+// TODO : Debounce search
+
 const { data: casesData, pending: loading } = useFetch('/api/cases', {
   params: computed(() => ({ page: currentPage.value, pageSize: pageSize.value, search: search.value })),
-  immediate: true,
+  lazy: true,
 });
-
-// Calcul du nombre total de pages basé sur le total des cas renvoyé
+// Calcul total pages
 const totalFilteredPages = computed(() => {
   return Math.ceil((casesData.value as { total: number }).total / pageSize.value);
 });
 
-// Pagination des données
-const paginatedCasesData = computed(() => (casesData.value as { data: any }).data);
+// Pagination of cases
+const paginatedCasesData = computed(() => (casesData.value as { data: CaseData[] }).data);
 
-// Réinitialisation à la première page en cas de nouvelle recherche
-watch(search, () => {
-  currentPage.value = 1;
-});
+
 </script>
 
 <style scoped></style>
