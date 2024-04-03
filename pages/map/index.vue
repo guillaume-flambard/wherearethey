@@ -22,6 +22,18 @@
           type: 'fill'
         }"
       /> -->
+        <MapboxLayer :layer="{
+        id: 'countries',
+        source: 'countries',
+        'source-layer': 'admin-0',
+        type: 'fill',
+        paint: {
+          'fill-color': '#f08',
+          'fill-opacity': 0.8
+        }
+      }" />
+
+
         <MapboxGeolocateControl position="top-left" />
       </MapboxMap>
     </div>
