@@ -3,39 +3,23 @@
     <h1 class="font-extrabold text-3xl text-center">Map</h1>
     <div ref="mapContainer" class="flex items-center justify-center relative h-[86vh] map-container">
 
-      <MapboxMap v-model="locations" ref="map" map-id="{ID}" class="absolute inset-0" :options="{
-        style: 'mapbox://styles/zoanlogia/cluelezpp009501ntb28m254a', // style URL
-        center: [-68.137343, 45.137451], // starting position
-        zoom: 1.5 // starting zoom
-      }">
-        <!-- <MapboxSource
-        source-id="{ID}"
-        :source="{
-          type: 'geojson',
-          data: '/test.geojson'
-        }"
-      />
-      <MapboxLayer
-        :layer="{
-          source: '{ID}',
-          id: 'geojson-layer',
-          type: 'fill'
-        }"
-      /> -->
-        <MapboxLayer :layer="{
-        id: 'countries',
-        source: 'countries',
-        'source-layer': 'admin-0',
-        type: 'fill',
-        paint: {
-          'fill-color': '#f08',
-          'fill-opacity': 0.8
-        }
-      }" />
-
-
-        <MapboxGeolocateControl position="top-left" />
+      <MapboxMap v-model="locations" ref="map" map-id="map2" class="absolute inset-0"
+        :options="{ style: 'mapbox://styles/zoanlogia/cluelezpp009501ntb28m254a', center: [-68.137343, 45.137451], zoom: 1.5 }">
+        <template v-for="(location, index) in locations" :key="index">
+          <MapboxDefaultMarker :lnglat="location.coordinates" :marker-id="'marker' + index">
+            <Icon name="noto:flying-saucer" size="25" />
+            <MapboxDefaultPopup :lnglat="location.coordinates" :popup-id="location.id.toString()"
+              class="mapboxgl-popup-content-child" :text="location.description">
+            </MapboxDefaultPopup>
+          </MapboxDefaultMarker>
+        </template>
+        <MapboxAttributionControl />
+        <MapboxScaleControl />
+        <MapboxNavigationControl />
+        <MapboxFullscreenControl />
+        <MapboxGeolocateControl />
       </MapboxMap>
+
     </div>
 
   </div>
@@ -48,9 +32,12 @@ definePageMeta({
     name: "rotate",
   },
 });
-const locations = ref([]);
-
-
+const locations = ref([
+  {
+    id: 1,
+    coordinates: [-68.137343, 45.137451],
+    description: "Description du lieu ici",
+  },
+]);
 </script>
-
 <style scoped></style>
