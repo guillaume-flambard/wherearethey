@@ -1,8 +1,13 @@
 import Papa from 'papaparse';
 import type { CaseData } from '~/types/cases';
 
+const geocodeCache = new Map<string, { lat: number, lon: number }>();
 // Fonction pour récupérer les coordonnées à partir du nom de la zone en utilisant l'API de géocodage de Mapbox
 async function getCoordinatesForName(name: string) {
+    if (geocodeCache.has(name)) {
+        return geocodeCache.get(name);
+    }
+
     const accessToken = 'pk.eyJ1Ijoiem9hbmxvZ2lhIiwiYSI6ImNsdWVsNzZhazBiZXEya3JvdzY1NnRkcXkifQ.SBSKPBqL7eT_feWhQBupUQ'
     const endpoint = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
     const url = `${endpoint}/${encodeURIComponent(name)}.json?access_token=${accessToken}`;
@@ -10,10 +15,12 @@ async function getCoordinatesForName(name: string) {
     try {
         const response = await $fetch(url) as { features: { center: [number, number] }[] };
         if (response.features && response.features.length > 0) {
-            const { center } = response.features[0]; // Prend la première caractéristique comme résultat
-            return { lat: center[1], lon: center[0] }; // Mapbox retourne [longitude, latitude]
+            const { center } = response.features[0];
+            const coordinates = { lat: center[1], lon: center[0] };
+            geocodeCache.set(name, coordinates); // Mettre en cache les coordonnées
+            return coordinates;
         }
-        return null; // Gérer les cas où aucun résultat n'est trouvé
+        return null;
     } catch (error) {
         console.error('Erreur lors de la récupération des coordonnées', error);
         return null;
@@ -43,7 +50,6 @@ export default defineEventHandler(async (event) => {
                         return { ...row, coordinates };
                     })
                 );
-
                 resolve(dataWithCoordinates);
             },
             error: reject,

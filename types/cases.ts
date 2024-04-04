@@ -8,4 +8,5 @@ export interface CaseData {
     cas_AAAA: string;
     cas_resume_web: string;
     cas_resume: string;
+    coordinates?: [lat: number, lon: number] | null;
 }

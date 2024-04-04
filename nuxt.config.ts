@@ -1,7 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ['@nuxt/ui', 'nuxt-mapbox', '@pinia/nuxt', "nuxt-lodash"],
+  modules: ['@nuxt/ui', 'nuxt-mapbox', '@pinia/nuxt', "nuxt-lodash",
+  ],
   mapbox: {
     accessToken: 'pk.eyJ1Ijoiem9hbmxvZ2lhIiwiYSI6ImNsdWVsNzZhazBiZXEya3JvdzY1NnRkcXkifQ.SBSKPBqL7eT_feWhQBupUQ'
   },
