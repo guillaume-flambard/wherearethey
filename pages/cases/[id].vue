@@ -7,7 +7,9 @@
       <div class="loader absolute"></div>
     </div> -->
     <h1 class="font-extrabold text-3xl text-center">X-File - {{ data?.id_cas }}</h1>
-    <CaseArticle :data="data" />
+    <div class="mt-20">
+      <CaseArticle :data="data" />
+    </div>
 
 
   </div>
