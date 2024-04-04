@@ -9,7 +9,7 @@ async function getCoordinatesForName(name: string) {
     }
 
     const accessToken = 'pk.eyJ1Ijoiem9hbmxvZ2lhIiwiYSI6ImNsdWVsNzZhazBiZXEya3JvdzY1NnRkcXkifQ.SBSKPBqL7eT_feWhQBupUQ'
-    const endpoint = 'https://api.mapbox.com/geocoding/v5/mapbox.places';
+    const endpoint = 'https://api.mapbox.com/geocoding/v5/mapbox.places'; // TODO Affiner resultat car deux cas ne sont pas affichés au bon endroit
     const url = `${endpoint}/${encodeURIComponent(name)}.json?access_token=${accessToken}`;
 
     try {
@@ -30,26 +30,27 @@ async function getCoordinatesForName(name: string) {
 export default defineEventHandler(async (event) => {
     const query = getQuery(event);
     const csvUrl = 'http://localhost:3000/public_cases.csv';
+    const page = parseInt(query?.page?.toString() || '') || 1
+    const limit = parseInt(query?.limit?.toString() || '') || 100;
 
-    const csvData = await $fetch(csvUrl, { responseType: 'text' });
-    const search_text = query.search?.toString().toLowerCase() || "";
+    const response = await fetch(csvUrl);
+    const csvData = await response.text();
+
 
     return new Promise((resolve, reject) => {
         Papa.parse<CaseData>(csvData as string, {
             header: true,
             skipEmptyLines: "greedy",
             complete: async (results) => {
-                // Filtrage des données en fonction du terme de recherche
-                const filteredData = results.data.filter((row: CaseData) =>
-                    row.cas_zone_nom.toLowerCase().includes(search_text)
-                );
+                const startIndex = (page - 1) * limit;
+                const endIndex = startIndex + limit;
+                const selectedData = results.data.slice(startIndex, endIndex);
 
-                const dataWithCoordinates = await Promise.all(
-                    filteredData.map(async (row) => {
-                        const coordinates = await getCoordinatesForName(row.cas_zone_nom);
-                        return { ...row, coordinates };
-                    })
-                );
+
+                const dataWithCoordinates = await Promise.all(selectedData.map(async (row) => {
+                    const coordinates = await getCoordinatesForName(row.cas_zone_nom);
+                    return { ...row, coordinates: coordinates || { lat: null, lon: null } };
+                }));
                 resolve(dataWithCoordinates);
             },
             error: reject,

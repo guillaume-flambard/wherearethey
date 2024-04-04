@@ -1,9 +1,11 @@
 <template>
   <div>
     <h1 class="font-extrabold text-3xl text-center">Map</h1>
+    <div v-if="pending">Loading...</div>
+    <div v-if="error">Error: {{ error.message }}</div>
     <div ref="mapContainer" class="flex items-center justify-center relative h-[86vh] map-container">
 
-      <MapboxMap v-model="locations" ref="map" map-id="map" class="absolute inset-0"
+      <MapboxMap :on-drag="loadMoreData" v-model="locations" ref="map" map-id="map" class="absolute inset-0"
         :options="{ style: 'mapbox://styles/zoanlogia/cluelezpp009501ntb28m254a', center: [-68.137343, 45.137451], zoom: 1.5, cluster: true, clusterMaxZoom: 14, clusterRadius: 50 }">
         <template v-for="(location, index) in locations" :key="location.id">
           <MapboxDefaultMarker :lnglat="[location.coordinates?.lon, location.coordinates?.lat]"
@@ -26,51 +28,50 @@
 </template>
 
 <script setup lang="ts">
-import Worker from '~/assets/worker/map.worker?worker'
-import { ref, onMounted } from 'vue';
 
 interface Location {
+  id: number;
+  cas_nom_dossier: string;
   coordinates: {
     lon: number;
     lat: number;
   };
-  cas_nom_dossier: string;
 }
 
+const currentPage = ref(1);
+const pageSize = ref(100); // Nombre d'éléments par page
 const locations = ref<Location[]>([]);
-const limit = ref(100);
-definePageMeta({
-  layout: "map",
-  pageTransition: {
-    name: "rotate",
-  },
-});
-// Assurez-vous que le chemin est correct
+const isLoading = ref(false);
+const allDataLoaded = ref(false);
 
-
-
-onMounted(() => {
-  if (window.Worker) {
-    const myWorker = new Worker();
-    myWorker.onmessage = function (e: MessageEvent) {
-
-      locations.value = locations.value.concat(e.data.slice(0, limit.value));
-    };
-
-    myWorker.onerror = function (e: ErrorEvent) {
-      console.error('Erreur dans le worker', e);
-    };
-    // Envoyez l'URL du CSV au worker pour traitement
-    myWorker.postMessage({ csvUrl: 'http://localhost:3000/public_cases.csv', accessToken: 'pk.eyJ1Ijoiem9hbmxvZ2lhIiwiYSI6ImNsdWVsNzZhazBiZXEya3JvdzY1NnRkcXkifQ.SBSKPBqL7eT_feWhQBupUQ' });
-    Worker.terminate();
+const { data, pending, error } = await useFetch('/api/map', {
+  params: {
+    page: currentPage.value,
+    limit: pageSize.value,
   }
 });
 
+locations.value = data.value as Location[];
 
-// // Remplacez '/api/locations' par votre point de terminaison API correct
-// const { data: locations, pending, error } = await useFetch('/api/map', {
-//   // Ajoutez des paramètres de requête si nécessaire[0].coordinates.lat
-//   lazy: true,
-// });
+const loadMoreData = async () => {
+  if (allDataLoaded.value || isLoading.value) return;
+  isLoading.value = true;
+
+  currentPage.value += 1;
+  const { data } = await useFetch('/api/map', {
+    params: {
+      page: currentPage.value,
+      limit: pageSize.value,
+    }
+  });
+
+  if ((data.value as Location[]).length < pageSize.value) {
+    allDataLoaded.value = true; // Plus de données à charger
+  }
+
+  locations.value = [...locations.value, ...data.value as Location[]];
+  isLoading.value = false;
+};
+
 </script>
 <style scoped></style>
