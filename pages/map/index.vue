@@ -1,16 +1,18 @@
+<!-- <Icon name="noto:flying-saucer" size="25" /> -->
 <template>
   <div>
     <h1 class="font-extrabold text-3xl text-center">Map</h1>
-    <div v-if="pending">Loading...</div>
-    <div v-if="error">Error: {{ error.message }}</div>
-    <div ref="mapContainer" class="flex items-center justify-center relative h-[86vh] map-container">
+    <!-- <div v-if="pending">Loading...</div> -->
+    <!-- <div v-if="error">Error: {{ error.message }}</div> -->
+    <div ref="mapContainer" class="map-container h-[86vh]"></div>
+
+    <!-- <div ref="mapContainer" class="flex items-center justify-center relative h-[86vh] map-container">
 
       <MapboxMap :on-drag="loadMoreData" v-model="locations" ref="map" map-id="map" class="absolute inset-0"
         :options="{ style: 'mapbox://styles/zoanlogia/cluelezpp009501ntb28m254a', center: [1.7191036, 46.71109], zoom: 1.5, cluster: true, clusterMaxZoom: 14, clusterRadius: 50 }">
         <template v-for="(location, index) in locations" :key="location.id_cas">
           <MapboxDefaultMarker draggable="true" :lnglat="[location.coordinates?.lon, location.coordinates?.lat]"
             :marker-id="'marker' + index">
-            <!-- <Icon name="noto:flying-saucer" size="25" /> -->
             <MapboxDefaultPopup :lnglat="[location.coordinates?.lon, location.coordinates?.lat]"
               :popup-id="'popup' + index" class="mapboxgl-popup-content-child">
               <div class="flex flex-col gap-2">
@@ -20,19 +22,17 @@
             </MapboxDefaultPopup>
           </MapboxDefaultMarker>
         </template>
-        <MapboxAttributionControl />
-        <MapboxScaleControl />
-        <MapboxNavigationControl />
-        <MapboxFullscreenControl />
-        <MapboxGeolocateControl />
-      </MapboxMap>
-    </div>
+<MapboxAttributionControl />
+<MapboxScaleControl />
+<MapboxNavigationControl />
+<MapboxFullscreenControl />
+<MapboxGeolocateControl />
+</MapboxMap>
+</div> -->
   </div>
 </template>
 
-<script setup lang="ts">
-import { _hidden } from '#tailwind-config/theme/aria';
-
+<!-- <script setup lang="ts">
 
 interface Location {
   id_cas: number;
@@ -79,5 +79,86 @@ const loadMoreData = async () => {
 };
 
 
+</script> -->
+
+<script setup>
+import { ref } from 'vue';
+import mapboxgl from 'mapbox-gl';
+
+mapboxgl.accessToken = 'pk.eyJ1Ijoiem9hbmxvZ2lhIiwiYSI6ImNsdWVsNzZhazBiZXEya3JvdzY1NnRkcXkifQ.SBSKPBqL7eT_feWhQBupUQ'
+
+const mapContainer = ref(null);
+const currentPage = ref(1);
+const pageSize = ref(100);
+
+// Initial data fetching
+const { data: initialLocations, pending, refresh } = useFetch('/api/map', {
+  params: { page: currentPage.value, limit: pageSize.value },
+});
+
+const map = ref(null);
+
+onMounted(() => {
+  map.value = new mapboxgl.Map({
+    container: mapContainer.value,
+    style: 'mapbox://styles/zoanlogia/cluelezpp009501ntb28m254a',
+    center: [1.7191036, 46.71109],
+    zoom: 1.5,
+  });
+
+  map.value.on('load', () => {
+    if (initialLocations.value) {
+      addMarkers(initialLocations.value);
+    }
+  });
+
+  map.value.on('dragend', () => {
+    loadMoreData();
+  });
+});
+
+function addMarkers(locations) {
+  locations.forEach((location) => {
+    const el = document.createElement('div');
+    el.className = 'marker';
+
+    const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
+      `<div><p>${location.cas_nom_dossier}</p><a href="/cases/${location.id_cas}" class="link">Voir</a></div>`
+    );
+
+    new mapboxgl.Marker(el).setLngLat([location.coordinates.lon, location.coordinates.lat]).setPopup(popup).addTo(map.value);
+  });
+}
+
+async function loadMoreData() {
+  currentPage.value++;
+  await refresh(); // Refresh or re-execute the fetch
+}
 </script>
-<style scoped></style>
+
+
+
+<style>
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 86vh;
+}
+
+.marker {
+  background-color: #12b488;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.link {
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: #fff;
+  color: #000;
+  text-decoration: none;
+  border-radius: 5px;
+}
+</style>

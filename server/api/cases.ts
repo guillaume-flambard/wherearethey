@@ -8,7 +8,7 @@ export default defineEventHandler(async (event) => {
     const search = query.search?.toString().toLowerCase() || "";
     const csvUrl = 'http://localhost:3000/public_cases.csv';
 
-    const csvData = await $fetch(csvUrl, { responseType: 'text' })
+    const csvData = await $fetch(csvUrl, { responseType: 'text' }) // On récupère le CSV
 
     return new Promise((resolve, reject) => {
         Papa.parse<CaseData>(csvData as string, { // Le `as string` n'est pas nécessaire ici car $fetch avec `responseType: 'text'` garantit déjà un string
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
                 const start = (page - 1) * pageSize;
                 const paginatedData = filteredData.slice(start, start + pageSize);
 
-                resolve({
+                resolve({ // On renvoie les données paginées
                     data: paginatedData,
                     page,
                     pageSize,
