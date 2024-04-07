@@ -11,6 +11,10 @@ export default defineNuxtConfig({
     pageTransition: { name: 'page', mode: 'out-in' },
     layoutTransition: { name: 'layout', mode: 'out-in' },
     head: {
+      link: [{
+        rel: 'stylesheet',
+        href: 'https://api.mapbox.com/mapbox-gl-js/v3.2.0/mapbox-gl.css'
+      }],
       charset: 'utf-8',
       viewport: 'width=device-width, initial-scale=1',
     }

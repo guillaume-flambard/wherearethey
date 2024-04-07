@@ -2,8 +2,9 @@
 <template>
   <div>
     <h1 class="font-extrabold text-3xl text-center">Map</h1>
-    <!-- <div v-if="pending">Loading...</div> -->
-    <div v-if="error">Error: {{ error }}</div>
+    <div v-if="pending">Loading...</div>
+
+
     <div ref="mapContainer" class="map-container h-[100vh]"></div>
 
   </div>
@@ -48,18 +49,20 @@ async function loadMoreData() {
   });
 
   if (data.value) {
+    console.log('Data:', data.value);
     addMarkers(data.value);
     currentPage.value++; // Préparer la page suivante pour la prochaine requête
   }
 }
 
 function addMarkers(locations) {
+
   locations.forEach(location => {
     const el = document.createElement('div');
     el.className = 'marker';
 
     const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-      `<div><p>${location.cas_nom_dossier}</p><a :to="/cases/${location.id_cas}" class="link">Voir</a></div>`
+      `<div><p>${location.cas_nom_dossier}</p><a href="/cases/${location.id_cas}" class="link">Voir</a></div>`
     );
 
     new mapboxgl.Marker(el)
@@ -67,6 +70,8 @@ function addMarkers(locations) {
       .setPopup(popup)
       .addTo(map);
   });
+
+  console.log('Added markers:', locations.length);
 }
 
 onUnmounted(() => {
@@ -83,7 +88,7 @@ onUnmounted(() => {
   background-size: cover;
   /* box-shadow: 0 0 10px rgba(48, 161, 106, 0.282); */
   /* here there's an icon of flying-saucer so we are making a really light box shadow */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
   width: 25px;
   height: 25px;
   border-radius: 50%;
