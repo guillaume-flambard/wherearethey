@@ -1,17 +1,19 @@
-<!-- <Icon name="noto:flying-saucer" size="25" /> -->
 <template>
   <div>
-    <h1 class="font-extrabold text-3xl text-center">Map</h1>
-    <div v-if="pending">Loading...</div>
+    <h1 class="font-extrabold text-3xl text-center mt-10 mb-[-80px]" v-show="showTitle">Map</h1>
 
-
-    <div ref="mapContainer" class="map-container h-[100vh]"></div>
-
+    <div ref="mapContainer" class="map-container h-[100dvh] rounded-lg"></div>
   </div>
 </template>
 
 <script setup>
 import mapboxgl from 'mapbox-gl';
+
+definePageMeta({
+  title: 'Map',
+  description: 'Map page description',
+  layout: 'map'
+});
 
 mapboxgl.accessToken = 'pk.eyJ1Ijoiem9hbmxvZ2lhIiwiYSI6ImNsdWVsNzZhazBiZXEya3JvdzY1NnRkcXkifQ.SBSKPBqL7eT_feWhQBupUQ'
 const mapContainer = ref(null);
@@ -20,6 +22,7 @@ let map = null;
 // Configuration initiale pour la pagination et l'intervalle
 const currentPage = ref(1);
 const pageSize = ref(50); // Vous pouvez ajuster la taille de page selon les besoins
+const showTitle = ref(true);
 let intervalId = null;
 
 onMounted(() => {
@@ -34,6 +37,11 @@ onMounted(() => {
 
   // Initialiser le chargement des données
   loadMoreData();
+
+  map.on('zoom', () => {
+    // Mettre à jour `showTitle` en fonction du niveau de zoom actuel
+    showTitle.value = map.getZoom() > 3 ? false : true;
+  });
 
   // Configurer l'intervalle pour charger plus de données
   intervalId = setInterval(loadMoreData, 500); // Augmentation de l'intervalle à 10 secondes
@@ -62,7 +70,12 @@ function addMarkers(locations) {
     el.className = 'marker';
 
     const popup = new mapboxgl.Popup({ offset: 25 }).setHTML(
-      `<div><p>${location.cas_nom_dossier}</p><a href="/cases/${location.id_cas}" class="link">Voir</a></div>`
+      `<div class="marker-content">
+        <p>
+          ${location.cas_nom_dossier}
+        </p>
+        <a href="/cases/${location.id_cas}" class="link">Voir</a>
+      </div>`
     );
 
     new mapboxgl.Marker(el)
@@ -82,7 +95,7 @@ onUnmounted(() => {
 
 
 
-<style>
+<style scoper>
 .marker {
   background-image: url('~/assets/img/flying-saucer.svg');
   background-size: cover;
@@ -95,6 +108,11 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
+.marker-content {
+  padding: 10px;
+  color: #fff;
+}
+
 .link {
   display: inline-block;
   padding: 5px 10px;
@@ -102,5 +120,30 @@ onUnmounted(() => {
   color: #000;
   text-decoration: none;
   border-radius: 5px;
+}
+
+.mapboxgl-popup-content {
+  @apply !bg-slate-800;
+  font-family: "Mono Roboto", monospace;
+}
+
+.mapboxgl-popup-close-button {
+  display: none !important;
+}
+
+.mapboxgl-popup-tip {
+  @apply !border-t-slate-800;
+}
+
+.mapboxgl-ctrl.mapboxgl-ctrl-attrib {
+  display: none !important;
+}
+
+.mapboxgl-ctrl.mapboxgl-ctrl-scale {
+  background-color: transparent !important;
+  width: auto !important;
+  border: 1px solid #06aeb4;
+  border-radius: 5px;
+  color: white;
 }
 </style>

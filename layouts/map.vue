@@ -3,7 +3,7 @@
         <header>
             <Navbar />
         </header>
-        <main class="container mx-auto p-4 my-20">
+        <main>
             <slot />
         </main>
     </div>

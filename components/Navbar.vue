@@ -1,5 +1,6 @@
 <template>
-  <nav class="mx-auto p-4 flex justify-between items-center h-20 fixed z-[999] w-full top-0">
+  <nav
+    class="mx-auto p-4 flex justify-between items-center h-20 fixed z-[999] w-full top-0 dark:bg-[#121212] bg-white shadow-md">
     <NuxtLink to="/" class="font-bold">👽 Where Are They</NuxtLink>
     <ul class="flex gap-4">
       <li>
