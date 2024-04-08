@@ -54,7 +54,7 @@ const addMarkers = (locations) => {
         <p>
           ${location.cas_nom_dossier}
         </p>
-        <a href="/cases/${location.id_cas}" class="link">Voir</a>
+        <a href="/cases/${location.id_cas}" class="link">En savoir +</a>
       </div>`
     );
 
@@ -86,28 +86,34 @@ const addMarkers = (locations) => {
 .marker-content {
   padding: 10px;
   color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .link {
   display: inline-block;
-  padding: 5px 10px;
-  background-color: #fff;
-  color: #000;
+  color: #fff;
   text-decoration: none;
-  border-radius: 5px;
+  font-weight: bold;
+}
+
+.link:hover {
+  text-decoration: underline;
 }
 
 .mapboxgl-popup-content {
   background-color: #1f2937;
   font-family: "Mono Roboto", monospace;
+  border-radius: 20px;
+}
+
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: #1f2937;
 }
 
 .mapboxgl-popup-close-button {
   display: none !important;
-}
-
-.mapboxgl-popup-tip {
-  border-top: 1px solid #374151;
 }
 
 .mapboxgl-ctrl.mapboxgl-ctrl-attrib {
