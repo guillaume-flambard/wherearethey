@@ -3,8 +3,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxt/ui', 'nuxt-mapbox', '@pinia/nuxt', "nuxt-lodash",
   ],
-  mapbox: {
-    accessToken: 'pk.eyJ1Ijoiem9hbmxvZ2lhIiwiYSI6ImNsdWVsNzZhazBiZXEya3JvdzY1NnRkcXkifQ.SBSKPBqL7eT_feWhQBupUQ'
+  runtimeConfig: {
+    public: {
+      MAPBOX_ACCESS_TOKEN: process.env.MAPBOX_TOKEN,
+    },
   },
   css: ['~/layouts/global.css'],
   app: {

@@ -1,8 +1,6 @@
 <template>
   <div>
-    <h1 class="font-extrabold text-3xl text-center mt-10 mb-[-80px]" v-show="showTitle">Map</h1>
-
-    <div ref="mapContainer" class="map-container h-[100dvh] rounded-lg"></div>
+    <div ref="mapContainer" v-once class="map-container h-[100dvh] rounded-lg"></div>
   </div>
 </template>
 
@@ -15,56 +13,38 @@ definePageMeta({
   layout: 'map'
 });
 
-mapboxgl.accessToken = 'pk.eyJ1Ijoiem9hbmxvZ2lhIiwiYSI6ImNsdWVsNzZhazBiZXEya3JvdzY1NnRkcXkifQ.SBSKPBqL7eT_feWhQBupUQ'
+const config = useRuntimeConfig();
+mapboxgl.accessToken = config.public.MAPBOX_ACCESS_TOKEN;
+
+const mapStore = useMapStore();
 const mapContainer = ref(null);
-let map = null;
 
-// Configuration initiale pour la pagination et l'intervalle
-const currentPage = ref(1);
-const pageSize = ref(50); // Vous pouvez ajuster la taille de page selon les besoins
-const showTitle = ref(true);
-let intervalId = null;
+let map;
 
-onMounted(() => {
+onMounted(async () => {
+  await mapStore.fetchData();
+  initMap();
+
+  if (mapStore.locations.length > 0) {
+    addMarkers(mapStore.locations);
+  }
+
+  watch(() => mapStore.locations, (newLocations) => {
+    addMarkers(newLocations);
+  }, { deep: true });
+});
+
+const initMap = () => {
   map = new mapboxgl.Map({
     container: mapContainer.value,
     style: 'mapbox://styles/zoanlogia/cluelezpp009501ntb28m254a',
     cluster: true,
-
     center: [1.7191036, 46.71109],
     zoom: 1.5,
   });
-
-  // Initialiser le chargement des données
-  loadMoreData();
-
-  map.on('zoom', () => {
-    // Mettre à jour `showTitle` en fonction du niveau de zoom actuel
-    showTitle.value = map.getZoom() > 3 ? false : true;
-  });
-
-  // Configurer l'intervalle pour charger plus de données
-  intervalId = setInterval(loadMoreData, 500); // Augmentation de l'intervalle à 10 secondes
-});
-
-async function loadMoreData() {
-  const { data } = await useFetch('/api/map', {
-    params: {
-      page: currentPage.value,
-      limit: pageSize.value,
-    },
-    // Optionnel: ajouter `pick` pour alléger la charge de données si votre API le permet
-  });
-
-  if (data.value) {
-    console.log('Data:', data.value);
-    addMarkers(data.value);
-    currentPage.value++; // Préparer la page suivante pour la prochaine requête
-  }
 }
 
-function addMarkers(locations) {
-
+const addMarkers = (locations) => {
   locations.forEach(location => {
     const el = document.createElement('div');
     el.className = 'marker';
@@ -86,11 +66,6 @@ function addMarkers(locations) {
 
   console.log('Added markers:', locations.length);
 }
-
-onUnmounted(() => {
-  if (map) map.remove();
-  clearInterval(intervalId); // Nettoyer l'intervalle lors du démontage
-});
 </script>
 
 
@@ -123,7 +98,7 @@ onUnmounted(() => {
 }
 
 .mapboxgl-popup-content {
-  @apply !bg-slate-800;
+  background-color: #1f2937;
   font-family: "Mono Roboto", monospace;
 }
 
@@ -132,7 +107,7 @@ onUnmounted(() => {
 }
 
 .mapboxgl-popup-tip {
-  @apply !border-t-slate-800;
+  border-top: 1px solid #374151;
 }
 
 .mapboxgl-ctrl.mapboxgl-ctrl-attrib {

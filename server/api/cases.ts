@@ -16,6 +16,8 @@ export default defineEventHandler(async (event) => {
             skipEmptyLines: "greedy",
             complete: (results) => {
                 // Filtrage des données en fonction du terme de recherche
+                console.log(results.data);
+
 
                 const filteredData = results.data.filter((row: CaseData) => {
                     return row.cas_nom_dossier.toLowerCase().includes(search)
